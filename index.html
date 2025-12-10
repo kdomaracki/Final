@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confusion Matrix and Binary Classification Practice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Confusion Matrix and Binary Classification Practice</h1>
+    
+    <!-- Question Type: Graph -->
+    <div id="graph-type" style="display:none;">
+        <div id="graph-container">
+            <canvas id="sigmoidGraph" width="800" height="400"></canvas>
+            <div style="margin: 1rem 0;">
+                <strong>Threshold:</strong> <span id="threshold-value">?</span>
+            </div>
+            <div id="legend" style="margin-bottom:1rem;">
+                <span style="display:inline-block;width:18px;height:18px;background:#3b82f6;border-radius:50%;margin-right:6px;vertical-align:middle;"></span> Blue class (y=0)
+                <span style="display:inline-block;width:18px;height:18px;background:#ff7ca8;border-radius:50%;margin-left:20px;margin-right:6px;vertical-align:middle;"></span> Red class (y=1)
+            </div>
+        </div>
+    </div>
+    
+    <!-- Question Type: Table -->
+    <div id="table-type" style="display:none;">
+        <div style="display:flex;justify-content:center;align-items:flex-start;gap:2rem;">
+            <div style="flex:1;min-width:350px;">
+                <h2 id="question-text"></h2>
+                <div style="text-align:center;margin-bottom:1rem;font-style:italic;color:#666;">
+                    Predict positive if p ≥ t, negative if p &lt; t
+                </div>
+                <table id="data-table" style="margin:auto;border-collapse:collapse;margin-bottom:2rem;">
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid #ccc;padding:0.5rem;">Index</th>
+                            <th style="border:1px solid #ccc;padding:0.5rem;">p (pred)</th>
+                            <th style="border:1px solid #ccc;padding:0.5rem;">y (true)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-tbody">
+                    </tbody>
+                </table>
+                <div style="text-align:center;margin-bottom:1rem;">
+                    <strong>Threshold: t = <span id="table-threshold-value">0.5</span></strong>
+                </div>
+            </div>
+            <div style="flex:0 0 380px;max-width:380px;text-align:center;">
+                <table style="margin:auto;border-collapse:collapse;width:100%;background:#f8fafc;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);overflow:hidden;">
+                    <caption style="caption-side:bottom;font-size:0.95rem;color:#444;margin-top:0.5rem;font-weight:bold;">Confusion Matrix Reference</caption>
+                    <thead>
+                        <tr>
+                            <th style="border:1px solid #bcd;background:#2563eb;color:#fff;padding:0.5rem;font-size:0.9rem;" colspan="2"></th>
+                            <th style="border:1px solid #bcd;background:#2563eb;color:#fff;padding:0.5rem;font-size:0.9rem;" colspan="2">Truth</th>
+                        </tr>
+                        <tr>
+                            <th style="border:1px solid #bcd;background:#2563eb;color:#fff;padding:0.5rem;font-size:0.9rem;" colspan="2"></th>
+                            <th style="border:1px solid #bcd;background:#2563eb;color:#fff;padding:0.5rem;font-size:0.9rem;">Positive (1)</th>
+                            <th style="border:1px solid #bcd;background:#2563eb;color:#fff;padding:0.5rem;font-size:0.9rem;">Negative (0)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th rowspan="2" style="border:1px solid #bcd;background:#2563eb;color:#fff;padding:0.5rem;font-size:0.9rem;writing-mode:vertical-rl;transform:rotate(180deg);">Pred</th>
+                            <th style="border:1px solid #bcd;background:#e0e7ff;color:#222;padding:0.5rem;font-size:0.9rem;">Positive (1)</th>
+                            <td style="border:1px solid #bcd;padding:0.5rem;color:#16a34a;font-weight:bold;font-size:0.85rem;">TP</td>
+                            <td style="border:1px solid #bcd;padding:0.5rem;color:#dc2626;font-weight:bold;font-size:0.85rem;">FP</td>
+                        </tr>
+                        <tr>
+                            <th style="border:1px solid #bcd;background:#e0e7ff;color:#222;padding:0.5rem;font-size:0.9rem;">Negative (0)</th>
+                            <td style="border:1px solid #bcd;padding:0.5rem;color:#dc2626;font-weight:bold;font-size:0.85rem;">FN</td>
+                            <td style="border:1px solid #bcd;padding:0.5rem;color:#16a34a;font-weight:bold;font-size:0.85rem;">TN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confusion-input" style="display:none;">
+        <h3>Enter Confusion Matrix Values</h3>
+        <table id="confusion-matrix-table" style="margin:auto;border-collapse:separate;border-spacing:0;width:500px;background:#fafcff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+            <thead>
+                <tr>
+                    <th style="border:none;"></th>
+                    <th colspan="2" style="text-align:center;border-bottom:1px solid #eaeaea;">Predicted 0</th>
+                    <th colspan="2" style="text-align:center;border-bottom:1px solid #eaeaea;">Predicted 1</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th style="text-align:left;padding-left:1em;border-right:1px solid #eaeaea;">Actual 0</th>
+                    <td style="text-align:center;">TN<br><input type="number" id="input-tn" min="0" style="width:60px;text-align:center;"></td>
+                    <td style="border-right:1px solid #eaeaea;"></td>
+                    <td style="text-align:center;">FP<br><input type="number" id="input-fp" min="0" style="width:60px;text-align:center;"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th style="text-align:left;padding-left:1em;border-right:1px solid #eaeaea;">Actual 1</th>
+                    <td style="text-align:center;">FN<br><input type="number" id="input-fn" min="0" style="width:60px;text-align:center;"></td>
+                    <td style="border-right:1px solid #eaeaea;"></td>
+                    <td style="text-align:center;">TP<br><input type="number" id="input-tp" min="0" style="width:60px;text-align:center;"></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div id="metric-input" style="display:none;">
+        <h3 id="metric-question"></h3>
+        <input type="number" id="metric-answer" min="0" style="padding:0.5rem;font-size:1rem;">
+    </div>
+    <button id="submit-matrix">Submit Answers</button>
+    <button id="new-question">New Question</button>
+    <p id="feedback" style="text-align:center;max-width:600px;margin:1rem auto;"></p>
+    <script src="script.js"></script>
+</body>
+</html>
